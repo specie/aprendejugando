@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '1.4'; // subir junto con VERSION en sw.js en cada publicación
+const APP_VERSION = '1.5'; // subir junto con VERSION en sw.js en cada publicación
 
 // ---------- Configuración ----------
 const CFG = {
@@ -99,14 +99,26 @@ const stats = (() => {
 let sonidoOn = ls.get(LS.sonido) !== 'off';
 const sonido = (() => {
   let ctx = null;
+  // iOS deja el contexto en 'interrupted' (no 'suspended') al abrir el menú de compartir, bloquear la
+  // pantalla o cambiar de app, y a veces lo cierra. Se reanuda en cualquier estado que no sea 'running'
+  // y se recrea si quedó cerrado. resume() solo funciona dentro de un toque, por eso se llama en cada uno.
   function ensure() {
     if (!sonidoOn) return null;
     try {
+      if (ctx && ctx.state === 'closed') ctx = null;
       ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-      if (ctx.state === 'suspended') ctx.resume();
+      if (ctx.state !== 'running') ctx.resume().catch(() => {});
       return ctx;
     } catch { return null; }
   }
+  function desbloquear() {
+    const c = ensure(); if (!c) return;
+    // Un buffer mudo "destraba" la salida de audio en iOS después de una interrupción.
+    const b = c.createBuffer(1, 1, 22050), src = c.createBufferSource();
+    src.buffer = b; src.connect(c.destination); src.start(0);
+  }
+  document.addEventListener('touchend', () => { if (ctx && ctx.state !== 'running') desbloquear(); }, { passive: true });
+  document.addEventListener('click', () => { if (ctx && ctx.state !== 'running') desbloquear(); });
   function nota(freq, dur, t0 = 0, tipo = 'square', vol = 0.08) {
     const c = ensure(); if (!c) return;
     const o = c.createOscillator(), g = c.createGain();
@@ -118,7 +130,7 @@ const sonido = (() => {
     o.start(t); o.stop(t + dur);
   }
   return {
-    activar() { ensure(); },
+    activar() { desbloquear(); },
     ok() { nota(660, 0.12); nota(880, 0.18, 0.1); },
     nivel() { nota(523, 0.1); nota(659, 0.1, 0.1); nota(784, 0.1, 0.2); nota(1046, 0.3, 0.3); },
     mal() { nota(180, 0.4, 0, 'sawtooth', 0.12); },
