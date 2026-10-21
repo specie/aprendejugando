@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>¿Quién es más rápido multiplicando?</title>
+<meta name="theme-color" content="#6366f1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- Menú -->
+  <section id="menu" class="pantalla activa">
+    <h1>⚡ ¿Quién es más rápido multiplicando?</h1>
+    <p class="sub">Respondé rápido… ¡pero bien! Sumá puntos y superá el récord.</p>
+
+    <div class="tarjeta tablas">
+      <p>Tablas para practicar</p>
+      <div id="chips"></div>
+    </div>
+
+    <button type="button" id="jugar" class="grande primario">¡Jugar!</button>
+    <div class="fila">
+      <button type="button" id="verRanking" class="secundario">🏆 Ranking</button>
+      <button type="button" id="sonido" class="secundario" aria-label="Sonido">🔊</button>
+    </div>
+  </section>
+
+  <!-- Juego -->
+  <section id="juego" class="pantalla">
+    <header>
+      <div>Nivel <b id="nivel">1</b></div>
+      <div>Puntos <b id="puntos">0</b></div>
+      <div>Aciertos <b id="aciertos">0</b></div>
+    </header>
+    <div class="barra"><div id="barraFill"></div></div>
+    <div id="segundos" class="segundos">10,0</div>
+    <div class="pregunta"><span id="pregunta">7 × 8</span></div>
+    <div id="opciones" class="opciones"></div>
+    <div id="flotante" class="flotante"></div>
+  </section>
+
+  <!-- Fin -->
+  <section id="fin" class="pantalla">
+    <h2 id="finTitulo">⏰ ¡Se acabó el tiempo!</h2>
+    <p id="finDetalle"></p>
+    <div class="resultado"><div class="num" id="finPuntos">0</div><div>puntos</div></div>
+    <div class="stats"><span id="finAciertos"></span> · <span id="finNivel"></span></div>
+
+    <form id="formNombre" class="oculto" autocomplete="off">
+      <p>🎉 ¡Entraste al ranking! ¿Cómo te llamás?</p>
+      <input id="nombre" type="text" maxlength="12" autocapitalize="words" autocomplete="off" placeholder="Tu nombre" required>
+      <button type="submit" class="grande primario">Guardar</button>
+    </form>
+
+    <div id="finBotones" class="oculto">
+      <button type="button" id="otraVez" class="grande primario">¡Otra vez!</button>
+      <div class="fila">
+        <button type="button" id="finRanking" class="secundario">🏆 Ranking</button>
+        <button type="button" id="finMenu" class="secundario">Menú</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ranking -->
+  <section id="ranking" class="pantalla">
+    <h2>🏆 Ranking</h2>
+    <ol id="lista"></ol>
+    <p id="vacio" class="sub oculto">Todavía no hay puntajes. ¡Jugá para ser el primero!</p>
+    <button type="button" id="rankingJugar" class="grande primario">¡Jugar!</button>
+    <button type="button" id="rankingMenu" class="secundario">Menú</button>
+    <button type="button" id="borrar" class="peligro chico">Borrar ranking</button>
+  </section>
+
+</main>
+<script src="app.js"></script>
+</body>
+</html>
