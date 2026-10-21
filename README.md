@@ -38,6 +38,8 @@ icon.svg
 
 Los números se ajustan en `CFG`, al principio de `app.js`.
 
+El menú muestra la versión (`APP_VERSION` en `app.js`). En cada publicación, subirla junto con `VERSION` en `sw.js`; así se sabe si el dispositivo ya tomó la versión nueva.
+
 ## Estadísticas anónimas
 
 El juego manda eventos a un Worker de Cloudflare (`stats/`) con base D1: `visita` (apertura de la app), `partida` (puntos, aciertos, nivel, motivo, duración, tablas, tiempo límite final) , `sesion` (tiempo en pantalla, tiempo jugando, partidas) y `compartir` (método: imagen, texto, portapapeles o cancelado). Identifica al dispositivo con un id aleatorio guardado en `localStorage`; no hay cookies ni datos personales. No se mide cuando se juega desde `localhost` o una IP de red local. Para apagarlo, dejar `STATS_URL` vacío en `app.js`.

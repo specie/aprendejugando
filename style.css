@@ -116,6 +116,7 @@ button:disabled { opacity: .5; cursor: default; }
 #lista .ver .icono { width: 22px; height: 22px; }
 .pista .icono { width: 1em; height: 1em; }
 .pista { color: #fff; opacity: .85; margin: 0; font-size: 1rem; }
+.version { color: #fff; opacity: .6; font-size: .8rem; margin: 0; }
 
 /* Detalle de un puntaje */
 .tarjetaPuntaje {

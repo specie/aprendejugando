@@ -1,5 +1,7 @@
 'use strict';
 
+const APP_VERSION = '1.4'; // subir junto con VERSION en sw.js en cada publicación
+
 // ---------- Configuración ----------
 const CFG = {
   TIEMPO_INICIAL: 10000,   // ms para responder la primera pregunta
@@ -63,7 +65,7 @@ const stats = (() => {
   const tiempoVisible = () => ses.visible + (ses.visibleDesde != null ? performance.now() - ses.visibleDesde : 0);
   function visita() {
     const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
-    enviar('visita', { primera, visitas, standalone, ancho: screen.width, alto: screen.height, idioma: navigator.language });
+    enviar('visita', { primera, visitas, standalone, ancho: screen.width, alto: screen.height, idioma: navigator.language, version: APP_VERSION });
     primera = false;
   }
   function cerrarSesion() {
@@ -542,6 +544,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ---------- Arranque ----------
+$('version').textContent = 'v' + APP_VERSION;
 renderChips();
 renderSonido();
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
