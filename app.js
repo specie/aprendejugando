@@ -3,8 +3,11 @@
 // ---------- Configuración ----------
 const CFG = {
   TIEMPO_INICIAL: 10000,   // ms para responder la primera pregunta
-  TIEMPO_MINIMO: 3000,     // nunca baja de acá
-  DECREMENTO: 250,         // ms que se restan por cada pregunta respondida
+  TIEMPO_MINIMO: 1200,     // nunca baja de acá (límite físico para leer y tocar)
+  // El tiempo de la próxima pregunta se achica según cuánto sobró en la anterior:
+  // si respondió justo, baja apenas AJUSTE_MINIMO; si le sobró mucho, baja además una fracción de lo que sobró.
+  AJUSTE_MINIMO: 100,      // ms que se restan siempre, aunque haya respondido justo
+  AJUSTE_SOBRANTE: 0.25,   // fracción del tiempo que sobró que se resta además
   PUNTOS_BASE: 100,        // por responder bien
   BONUS_MAX: 100,          // extra máximo por velocidad (proporcional al tiempo que sobró)
   PREGUNTAS_POR_NIVEL: 5,
@@ -177,7 +180,7 @@ const nivelDe = (n) => Math.floor(n / CFG.PREGUNTAS_POR_NIVEL) + 1;
 function iniciar() {
   sonido.activar();
   if (juego) { cancelAnimationFrame(juego.raf); clearTimeout(juego.timer); }
-  juego = { inicio: Date.now(), puntos: 0, n: 0, actual: null, total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
+  juego = { inicio: Date.now(), puntos: 0, n: 0, actual: null, limite: CFG.TIEMPO_INICIAL, total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
   $('puntos').textContent = '0';
   $('aciertos').textContent = '0';
   $('nivel').textContent = '1';
@@ -194,7 +197,7 @@ function nuevaPregunta() {
   juego.ultimaClave = clave;
   const correcto = a * b;
   juego.actual = { a, b, correcto, opciones: mezclar([correcto, ...distractores(a, b, correcto)]) };
-  juego.total = Math.max(CFG.TIEMPO_MINIMO, CFG.TIEMPO_INICIAL - CFG.DECREMENTO * juego.n);
+  juego.total = juego.limite;
   juego.deadline = performance.now() + juego.total;
   juego.ultimoTic = null;
   juego.bloqueado = false;
@@ -239,6 +242,8 @@ function responder(idx) {
     return;
   }
   const restante = Math.max(0, juego.deadline - performance.now());
+  // La próxima pregunta da menos tiempo: siempre un poco, y bastante más si esta la respondió sobrado.
+  juego.limite = Math.max(CFG.TIEMPO_MINIMO, juego.total - CFG.AJUSTE_MINIMO - restante * CFG.AJUSTE_SOBRANTE);
   const bonus = Math.round(CFG.BONUS_MAX * restante / juego.total);
   const ganados = CFG.PUNTOS_BASE + bonus;
   const nivelAntes = nivelDe(juego.n);
@@ -304,12 +309,12 @@ document.addEventListener('visibilitychange', () => {
 // ---------- Fin de partida ----------
 function mostrarFin(motivo) {
   const { a, b, correcto } = juego.actual;
-  stats.partida({ puntos: juego.puntos, aciertos: juego.n, nivel: nivelDe(juego.n), motivo, duracion: Date.now() - juego.inicio, tablas: tablas.join(',') });
+  stats.partida({ puntos: juego.puntos, aciertos: juego.n, nivel: nivelDe(juego.n), motivo, duracion: Date.now() - juego.inicio, tablas: tablas.join(','), limiteFinal: Math.round(juego.total) });
   $('finTitulo').textContent = motivo === 'tiempo' ? '⏰ ¡Se acabó el tiempo!' : '❌ ¡Casi!';
   $('finDetalle').textContent = `${a} × ${b} = ${correcto}`;
   $('finPuntos').textContent = juego.puntos;
   $('finAciertos').textContent = `${juego.n} acierto${juego.n === 1 ? '' : 's'}`;
-  $('finNivel').textContent = `nivel ${nivelDe(juego.n)}`;
+  $('finNivel').textContent = `nivel ${nivelDe(juego.n)} · ${fmtSeg(juego.total)} s por pregunta`;
   const entra = juego.puntos > 0 && entraEnRanking(juego.puntos);
   $('formNombre').classList.toggle('oculto', !entra);
   $('finBotones').classList.toggle('oculto', entra);

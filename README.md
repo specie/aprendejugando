@@ -29,7 +29,7 @@ icon.svg
 ## Reglas
 
 - Se elige qué tablas practicar (2 a 9, se recuerda la elección).
-- Cada pregunta tiene 4 opciones y un tiempo límite que empieza en 10 s y baja 0,25 s por pregunta, hasta un mínimo de 3 s.
+- Cada pregunta tiene 4 opciones y un tiempo límite que empieza en 10 s. Después de cada acierto, el tiempo de la próxima pregunta baja según cuánto sobró: siempre 0,1 s, más un 25 % del tiempo que sobró. Si respondés justo, baja apenas; si respondés sobrado, baja mucho. Mínimo 1,2 s.
 - Puntos por acierto: 100 fijos + hasta 100 de bonus según cuánto tiempo sobró.
 - Cada 5 aciertos sube un nivel.
 - Se pierde al responder mal o al quedarse sin tiempo.
@@ -40,7 +40,7 @@ Los números se ajustan en `CFG`, al principio de `app.js`.
 
 ## Estadísticas anónimas
 
-El juego manda eventos a un Worker de Cloudflare (`stats/`) con base D1: `visita` (apertura de la app), `partida` (puntos, aciertos, nivel, motivo, duración, tablas) , `sesion` (tiempo en pantalla, tiempo jugando, partidas) y `compartir` (método: imagen, texto, portapapeles o cancelado). Identifica al dispositivo con un id aleatorio guardado en `localStorage`; no hay cookies ni datos personales. No se mide cuando se juega desde `localhost` o una IP de red local. Para apagarlo, dejar `STATS_URL` vacío en `app.js`.
+El juego manda eventos a un Worker de Cloudflare (`stats/`) con base D1: `visita` (apertura de la app), `partida` (puntos, aciertos, nivel, motivo, duración, tablas, tiempo límite final) , `sesion` (tiempo en pantalla, tiempo jugando, partidas) y `compartir` (método: imagen, texto, portapapeles o cancelado). Identifica al dispositivo con un id aleatorio guardado en `localStorage`; no hay cookies ni datos personales. No se mide cuando se juega desde `localhost` o una IP de red local. Para apagarlo, dejar `STATS_URL` vacío en `app.js`.
 
 - Panel: `https://aprendejugando-stats.cavassinif.workers.dev/dash?k=<clave>&dias=30` (la clave está en `stats/.dev.vars`, fuera de git).
 - JSON: mismo host, `/stats?k=<clave>&dias=30`. `dias=0` es todo el histórico.
