@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '1.6'; // subir junto con VERSION en sw.js en cada publicación
+const APP_VERSION = '1.7'; // subir junto con VERSION en sw.js en cada publicación
 
 // ---------- Configuración ----------
 const CFG = {
