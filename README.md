@@ -34,7 +34,7 @@ icon.svg
 - Cada 5 aciertos sube un nivel.
 - Se pierde al responder mal o al quedarse sin tiempo.
 - Ranking local con los 10 mejores puntajes (`localStorage`).
-- Tocar un puntaje del ranking abre una tarjeta en grande para sacarle captura o compartirla. El botón «Compartir» genera una imagen PNG (1080×1350) y usa el menú de compartir del dispositivo; si no está disponible, copia el texto al portapapeles.
+- Cada fila del ranking tiene un botón 📤 (también sirve tocar la fila) que abre una tarjeta en grande para sacarle captura o compartirla. El botón «Compartir» genera una imagen PNG (1080×1350) y usa el menú de compartir del dispositivo; si no está disponible, copia el texto al portapapeles.
 
 Los números se ajustan en `CFG`, al principio de `app.js`.
 

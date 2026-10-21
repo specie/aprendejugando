@@ -354,7 +354,7 @@ function renderRanking(destacadoId) {
       <span class="nom"></span>
       <span class="det">${e.aciertos} aciertos · nivel ${e.nivel}<br>${fecha}</span>
       <span class="pts">${e.puntos}</span>
-      <span class="flecha">›</span>`;
+      <button type="button" class="chico ver" aria-label="Ver y compartir">📤</button>`;
     li.querySelector('.nom').textContent = e.nombre;
     li.addEventListener('click', () => mostrarDetalle(e, i));
     lista.appendChild(li);

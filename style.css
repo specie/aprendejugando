@@ -103,7 +103,7 @@ button:disabled { opacity: .5; cursor: default; }
 
 /* Ranking */
 #lista { list-style: none; padding: 0; margin: 0; width: 100%; background: var(--card); border-radius: var(--radio); overflow: hidden; }
-#lista li { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 1.1rem; cursor: pointer; }
+#lista li { display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; border-bottom: 1px solid #eee; font-size: 1.1rem; cursor: pointer; }
 #lista li:active { background: #eef2ff; }
 #lista li:last-child { border-bottom: 0; }
 #lista li.nuevo { background: #fef3c7; }
@@ -111,7 +111,7 @@ button:disabled { opacity: .5; cursor: default; }
 #lista .nom { flex: 1; text-align: left; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #lista .det { color: var(--suave); font-size: .85rem; text-align: right; }
 #lista .pts { font-weight: 900; font-size: 1.2rem; min-width: 3em; text-align: right; }
-#lista .flecha { color: #c7c9d9; font-size: 1.2rem; }
+#lista .ver { background: #eef2ff; min-width: 44px; min-height: 44px; padding: 0; font-size: 1.3rem; border-radius: 12px; flex: none; }
 .pista { color: #fff; opacity: .85; margin: 0; font-size: 1rem; }
 
 /* Detalle de un puntaje */

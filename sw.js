@@ -1,5 +1,5 @@
 /* Service worker: red primero, caché de respaldo para jugar sin conexión. */
-const VERSION = 'aj-v3';
+const VERSION = 'aj-v4';
 const ARCHIVOS = ['./', './index.html', './style.css', './app.js', './icon.svg', './manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
