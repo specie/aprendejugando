@@ -25,6 +25,8 @@
     </div>
 
     <button type="button" id="jugar" class="grande primario">¡Jugar!</button>
+    <button type="button" id="practicar" class="grande practica">📚 Practicar</button>
+    <p class="pista modos"><b>Jugar</b>: contra reloj, un error y perdés.<br><b>Practicar</b>: sin perder, te muestra la respuesta y seguís.</p>
     <div class="fila">
       <button type="button" id="verRanking" class="secundario">🏆 Ranking</button>
       <button type="button" id="sonido" class="secundario" aria-label="Sonido">🔊</button>
@@ -38,11 +40,13 @@
       <div>Nivel <b id="nivel">1</b></div>
       <div>Puntos <b id="puntos">0</b></div>
       <div>Aciertos <b id="aciertos">0</b></div>
+      <div id="hErrores" class="oculto">Errores <b id="errores">0</b></div>
     </header>
     <div class="barra"><div id="barraFill"></div></div>
     <div id="segundos" class="segundos">10,0</div>
     <div class="pregunta"><span id="pregunta">7 × 8</span></div>
     <div id="opciones" class="opciones"></div>
+    <button type="button" id="terminar" class="secundario chico oculto">Terminar práctica</button>
     <div id="flotante" class="flotante"></div>
   </section>
 

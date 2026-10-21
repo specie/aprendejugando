@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '1.5'; // subir junto con VERSION en sw.js en cada publicación
+const APP_VERSION = '1.6'; // subir junto con VERSION en sw.js en cada publicación
 
 // ---------- Configuración ----------
 const CFG = {
@@ -172,6 +172,7 @@ function renderChips() {
     cont.appendChild(b);
   }
   $('jugar').disabled = tablas.length === 0;
+  $('practicar').disabled = tablas.length === 0;
 }
 
 // ---------- Preguntas ----------
@@ -194,13 +195,19 @@ function distractores(a, b, correcto) {
 let juego = null;
 const nivelDe = (n) => Math.floor(n / CFG.PREGUNTAS_POR_NIVEL) + 1;
 
-function iniciar() {
+// modo: 'reloj' (se pierde al fallar o quedarse sin tiempo, entra al ranking) o 'practica' (al fallar
+// muestra la respuesta correcta y sigue; termina cuando el jugador quiere; no entra al ranking).
+function iniciar(modo) {
   sonido.activar();
   if (juego) { cancelAnimationFrame(juego.raf); clearTimeout(juego.timer); }
-  juego = { inicio: Date.now(), puntos: 0, n: 0, actual: null, limite: CFG.TIEMPO_INICIAL, tiempos: [], total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
+  modo = modo === 'practica' ? 'practica' : 'reloj';
+  juego = { modo, inicio: Date.now(), puntos: 0, n: 0, errores: 0, actual: null, limite: CFG.TIEMPO_INICIAL, tiempos: [], total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
   $('puntos').textContent = '0';
   $('aciertos').textContent = '0';
+  $('errores').textContent = '0';
   $('nivel').textContent = '1';
+  $('hErrores').classList.toggle('oculto', modo !== 'practica');
+  $('terminar').classList.toggle('oculto', modo !== 'practica');
   mostrar('juego');
   nuevaPregunta();
 }
@@ -296,7 +303,7 @@ function ajustarLimite() {
 function perder(motivo) {
   juego.bloqueado = true;
   cancelAnimationFrame(juego.raf);
-  const { correcto, opciones } = juego.actual;
+  const { a, b, correcto, opciones } = juego.actual;
   const botones = [...$('opciones').children];
   if (motivo === 'tiempo') {
     $('segundos').textContent = fmtSeg(0);
@@ -309,7 +316,25 @@ function perder(motivo) {
   if (navigator.vibrate) navigator.vibrate(200);
   $('juego').classList.add('temblor');
   setTimeout(() => $('juego').classList.remove('temblor'), 500);
+  if (juego.modo === 'practica') {
+    // En práctica no se pierde: se muestra la respuesta correcta, se afloja un poco el tiempo y sigue.
+    juego.errores += 1;
+    $('errores').textContent = juego.errores;
+    pulsar($('errores'));
+    flotante(`${a} × ${b} = ${correcto}`);
+    juego.limite = Math.min(CFG.TIEMPO_INICIAL, juego.limite * 1.1);
+    juego.timer = setTimeout(nuevaPregunta, 1800);
+    return;
+  }
   juego.timer = setTimeout(() => mostrarFin(motivo), 1300);
+}
+
+function terminarPractica() {
+  if (!juego || juego.modo !== 'practica') return;
+  juego.bloqueado = true;
+  cancelAnimationFrame(juego.raf);
+  clearTimeout(juego.timer);
+  mostrarFin('terminado');
 }
 
 function flotante(texto) {
@@ -337,13 +362,19 @@ document.addEventListener('visibilitychange', () => {
 // ---------- Fin de partida ----------
 function mostrarFin(motivo) {
   const { a, b, correcto } = juego.actual;
-  stats.partida({ puntos: juego.puntos, aciertos: juego.n, nivel: nivelDe(juego.n), motivo, duracion: Date.now() - juego.inicio, tablas: tablas.join(','), limiteFinal: Math.round(juego.total) });
-  $('finTitulo').textContent = motivo === 'tiempo' ? '⏰ ¡Se acabó el tiempo!' : '❌ ¡Casi!';
-  $('finDetalle').textContent = `${a} × ${b} = ${correcto}`;
+  const practica = juego.modo === 'practica';
+  stats.partida({ modo: juego.modo, puntos: juego.puntos, aciertos: juego.n, errores: juego.errores, nivel: nivelDe(juego.n), motivo, duracion: Date.now() - juego.inicio, tablas: tablas.join(','), limiteFinal: Math.round(juego.total) });
+  if (practica) {
+    $('finTitulo').textContent = '📚 ¡Buena práctica!';
+    $('finDetalle').textContent = juego.errores ? `${juego.errores} error${juego.errores === 1 ? '' : 'es'}` : '¡Sin errores!';
+  } else {
+    $('finTitulo').textContent = motivo === 'tiempo' ? '⏰ ¡Se acabó el tiempo!' : '❌ ¡Casi!';
+    $('finDetalle').textContent = `${a} × ${b} = ${correcto}`;
+  }
   $('finPuntos').textContent = juego.puntos;
   $('finAciertos').textContent = `${juego.n} acierto${juego.n === 1 ? '' : 's'}`;
   $('finNivel').textContent = `nivel ${nivelDe(juego.n)} · ${fmtSeg(juego.total)} s por pregunta`;
-  const entra = juego.puntos > 0 && entraEnRanking(juego.puntos);
+  const entra = !practica && juego.puntos > 0 && entraEnRanking(juego.puntos);
   $('formNombre').classList.toggle('oculto', !entra);
   $('finBotones').classList.toggle('oculto', entra);
   mostrar('fin');
@@ -524,16 +555,18 @@ function borrarRanking() {
 }
 
 // ---------- Eventos ----------
-$('jugar').addEventListener('click', iniciar);
-$('otraVez').addEventListener('click', iniciar);
-$('rankingJugar').addEventListener('click', iniciar);
+$('jugar').addEventListener('click', () => iniciar('reloj'));
+$('practicar').addEventListener('click', () => iniciar('practica'));
+$('otraVez').addEventListener('click', () => iniciar(juego ? juego.modo : 'reloj'));
+$('rankingJugar').addEventListener('click', () => iniciar('reloj'));
+$('terminar').addEventListener('click', terminarPractica);
 $('verRanking').addEventListener('click', () => { renderRanking(); mostrar('ranking'); });
 $('finRanking').addEventListener('click', () => { renderRanking(); mostrar('ranking'); });
 $('finMenu').addEventListener('click', () => mostrar('menu'));
 $('rankingMenu').addEventListener('click', () => mostrar('menu'));
 $('borrar').addEventListener('click', borrarRanking);
 $('compartir').addEventListener('click', compartir);
-$('detalleJugar').addEventListener('click', iniciar);
+$('detalleJugar').addEventListener('click', () => iniciar('reloj'));
 $('detalleVolver').addEventListener('click', () => { renderRanking(); mostrar('ranking'); });
 $('sonido').addEventListener('click', () => {
   sonidoOn = !sonidoOn;

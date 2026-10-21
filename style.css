@@ -39,6 +39,7 @@ button:disabled { opacity: .5; cursor: default; }
 .grande { font-size: 1.7rem; padding: 18px 40px; min-height: 72px; width: 100%; }
 .primario { background: var(--primario); color: #fff; }
 .secundario { background: rgba(255,255,255,.25); color: #fff; }
+.practica { background: var(--card); color: var(--bg1); }
 .chico { font-size: .95rem; padding: 8px 14px; min-height: 40px; box-shadow: none; }
 .peligro { background: transparent; color: #fff; opacity: .75; box-shadow: none; }
 .fila { display: flex; gap: 12px; width: 100%; }
@@ -57,6 +58,8 @@ button:disabled { opacity: .5; cursor: default; }
 /* Juego */
 #juego { justify-content: flex-start; gap: 12px; }
 #juego header { display: flex; justify-content: space-between; width: 100%; color: #fff; font-size: 1rem; }
+#juego header > div { flex: 1; }
+#terminar { margin-bottom: 8px; }
 #juego header b { font-size: 1.5rem; display: block; font-variant-numeric: tabular-nums; }
 #juego header b.pulso { animation: pulso .5s; }
 @keyframes pulso { 50% { transform: scale(1.5); color: #fde68a; } }
@@ -116,6 +119,7 @@ button:disabled { opacity: .5; cursor: default; }
 #lista .ver .icono { width: 22px; height: 22px; }
 .pista .icono { width: 1em; height: 1em; }
 .pista { color: #fff; opacity: .85; margin: 0; font-size: 1rem; }
+.modos { font-size: .95rem; line-height: 1.5; }
 .version { color: #fff; opacity: .6; font-size: .8rem; margin: 0; }
 
 /* Detalle de un puntaje */

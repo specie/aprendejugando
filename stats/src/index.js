@@ -86,6 +86,7 @@ async function calcular(env, d) {
               AVG(json_extract(datos,'$.aciertos')) aciertosProm, MAX(json_extract(datos,'$.aciertos')) aciertosMax,
               MAX(json_extract(datos,'$.nivel')) nivelMax,
               SUM(CASE WHEN json_extract(datos,'$.motivo')='tiempo' THEN 1 ELSE 0 END) porTiempo,
+              SUM(CASE WHEN json_extract(datos,'$.modo')='practica' THEN 1 ELSE 0 END) practicas,
               AVG(json_extract(datos,'$.duracion')) duracionProm
        FROM events WHERE tipo='partida' AND ts>=?`).first(),
     q(`SELECT COUNT(*) volvieron FROM (
@@ -108,7 +109,8 @@ async function calcular(env, d) {
        GROUP BY rango ORDER BY orden`).all(),
     q(`SELECT json_extract(datos,'$.puntos') puntos, json_extract(datos,'$.aciertos') aciertos,
               json_extract(datos,'$.nivel') nivel, json_extract(datos,'$.motivo') motivo, ts
-       FROM events WHERE tipo='partida' AND ts>=? ORDER BY puntos DESC LIMIT 10`).all(),
+       FROM events WHERE tipo='partida' AND ts>=? AND COALESCE(json_extract(datos,'$.modo'),'reloj')!='practica'
+       ORDER BY puntos DESC LIMIT 10`).all(),
     q(`SELECT json_extract(datos,'$.tablas') tablas, COUNT(*) n
        FROM events WHERE tipo='partida' AND ts>=? GROUP BY tablas ORDER BY n DESC LIMIT 8`).all(),
     q(`SELECT COUNT(*) total, COUNT(DISTINCT cid) dispositivos,
@@ -145,7 +147,8 @@ async function calcular(env, d) {
       aciertosMax: partidas.aciertosMax || 0,
       nivelMax: partidas.nivelMax || 0,
       porTiempo: partidas.porTiempo || 0,
-      porError: (partidas.partidas || 0) - (partidas.porTiempo || 0),
+      porError: (partidas.partidas || 0) - (partidas.porTiempo || 0) - (partidas.practicas || 0),
+      practicas: partidas.practicas || 0,
       duracionProm: Math.round(partidas.duracionProm || 0),
     },
     compartidos: { total: compartidos.total || 0, dispositivos: compartidos.dispositivos || 0, imagen: compartidos.imagen || 0 },
@@ -221,6 +224,7 @@ function renderDash(s, d, k) {
   ${tarjeta(P.aciertosProm, 'aciertos promedio', 'máximo ' + P.aciertosMax + ' · nivel máx. ' + P.nivelMax)}
   ${tarjeta(mmss(P.duracionProm), 'duración promedio')}
   ${tarjeta(P.total ? pct(P.porTiempo / P.total) : '0 %', 'perdidas por tiempo', 'el resto, por error')}
+  ${tarjeta(P.practicas, 'prácticas', 'partidas en modo práctica')}
   ${tarjeta(s.compartidos.total, 'puntajes compartidos', s.compartidos.total ? s.compartidos.imagen + ' con imagen · ' + s.compartidos.dispositivos + ' dispositivos' : '')}
 </div>
 
