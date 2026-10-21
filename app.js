@@ -354,13 +354,14 @@ function renderRanking(destacadoId) {
       <span class="nom"></span>
       <span class="det">${e.aciertos} aciertos · nivel ${e.nivel}<br>${fecha}</span>
       <span class="pts">${e.puntos}</span>
-      <button type="button" class="chico ver" aria-label="Ver y compartir">📤</button>`;
+      <button type="button" class="chico ver" aria-label="Ver y compartir">${ICONO_COMPARTIR}</button>`;
     li.querySelector('.nom').textContent = e.nombre;
     li.addEventListener('click', () => mostrarDetalle(e, i));
     lista.appendChild(li);
   });
 }
 const MEDALLAS = ['🥇', '🥈', '🥉'];
+const ICONO_COMPARTIR = '<svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7l6.8-4M8.6 13.3l6.8 4"/></svg>';
 const URL_JUEGO = 'https://specie.github.io/aprendejugando/';
 
 // ---------- Detalle de un puntaje (para sacar captura o compartir) ----------

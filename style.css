@@ -111,7 +111,10 @@ button:disabled { opacity: .5; cursor: default; }
 #lista .nom { flex: 1; text-align: left; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #lista .det { color: var(--suave); font-size: .85rem; text-align: right; }
 #lista .pts { font-weight: 900; font-size: 1.2rem; min-width: 3em; text-align: right; }
-#lista .ver { background: #eef2ff; min-width: 44px; min-height: 44px; padding: 0; font-size: 1.3rem; border-radius: 12px; flex: none; }
+#lista .ver { background: #eef2ff; color: var(--bg1); min-width: 44px; min-height: 44px; padding: 0; border-radius: 12px; flex: none; display: flex; align-items: center; justify-content: center; }
+.icono { width: 1.1em; height: 1.1em; fill: currentColor; stroke: currentColor; stroke-width: 2; stroke-linecap: round; vertical-align: -0.15em; }
+#lista .ver .icono { width: 22px; height: 22px; }
+.pista .icono { width: 1em; height: 1em; }
 .pista { color: #fff; opacity: .85; margin: 0; font-size: 1rem; }
 
 /* Detalle de un puntaje */
