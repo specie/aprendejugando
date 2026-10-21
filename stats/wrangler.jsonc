@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aprendejugando-stats",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "observability": { "enabled": true },
+  "vars": { "TZ_OFFSET_H": -3 },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "aprendejugando-stats", "database_id": "2963869c-7d79-4417-beee-236b98b3ded2" }
+  ]
+}

@@ -10,7 +10,8 @@ const CFG = {
   PREGUNTAS_POR_NIVEL: 5,
   RANKING_MAX: 10,
 };
-const LS = { tablas: 'aj.mult.tablas', ranking: 'aj.mult.ranking', nombre: 'aj.nombre', sonido: 'aj.sonido' };
+const LS = { tablas: 'aj.mult.tablas', ranking: 'aj.mult.ranking', nombre: 'aj.nombre', sonido: 'aj.sonido', cid: 'aj.cid', visitas: 'aj.visitas' };
+const STATS_URL = 'https://aprendejugando-stats.cavassinif.workers.dev/e'; // '' para apagar la medición
 const TABLAS_DEFAULT = [2, 3, 4, 5, 6, 7, 8, 9];
 
 // ---------- Utilidades ----------
@@ -28,6 +29,62 @@ const ls = {
   del(k) { try { localStorage.removeItem(k); } catch { /* ídem */ } },
 };
 const fmtSeg = (ms) => (ms / 1000).toFixed(1).replace('.', ',');
+
+// ---------- Estadísticas anónimas ----------
+// Un id aleatorio por dispositivo (sin cookies, sin datos personales). Eventos: visita, partida, sesion.
+// No se mide cuando se juega desde localhost o una IP de la red local.
+const stats = (() => {
+  const local = /^(localhost|127\.0\.0\.1|\[::1\]|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+  const activo = !!STATS_URL && !local;
+  const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12));
+  let cid = ls.get(LS.cid);
+  let primera = !cid;
+  if (!cid) { cid = uuid(); ls.set(LS.cid, cid); }
+  const visitas = (parseInt(ls.get(LS.visitas), 10) || 0) + 1;
+  ls.set(LS.visitas, String(visitas));
+  const PAUSA_NUEVA_SESION = 30 * 60 * 1000;
+  let sid = uuid();
+  const ses = { visible: 0, visibleDesde: document.hidden ? null : performance.now(), ocultoDesde: null, jugado: 0, partidas: 0, puntosMax: 0 };
+
+  function enviar(tipo, datos) {
+    if (!activo) return;
+    const cuerpo = JSON.stringify({ cid, sid, eventos: [{ tipo, datos }] });
+    try {
+      if (navigator.sendBeacon && navigator.sendBeacon(STATS_URL, new Blob([cuerpo], { type: 'text/plain' }))) return;
+    } catch { /* sigue con fetch */ }
+    fetch(STATS_URL, { method: 'POST', body: cuerpo, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(() => {});
+  }
+  const tiempoVisible = () => ses.visible + (ses.visibleDesde != null ? performance.now() - ses.visibleDesde : 0);
+  function visita() {
+    const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+    enviar('visita', { primera, visitas, standalone, ancho: screen.width, alto: screen.height, idioma: navigator.language });
+    primera = false;
+  }
+  function cerrarSesion() {
+    enviar('sesion', { duracion: Math.round(tiempoVisible()), jugado: Math.round(ses.jugado), partidas: ses.partidas, puntosMax: ses.puntosMax });
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      ses.visible = tiempoVisible(); ses.visibleDesde = null; ses.ocultoDesde = Date.now();
+      cerrarSesion();
+    } else {
+      if (ses.ocultoDesde && Date.now() - ses.ocultoDesde > PAUSA_NUEVA_SESION) {
+        sid = uuid();
+        Object.assign(ses, { visible: 0, jugado: 0, partidas: 0, puntosMax: 0 });
+        visita();
+      }
+      ses.visibleDesde = performance.now(); ses.ocultoDesde = null;
+    }
+  });
+  window.addEventListener('pagehide', () => { if (!document.hidden) { ses.visible = tiempoVisible(); ses.visibleDesde = null; cerrarSesion(); } });
+  visita();
+  return {
+    partida(datos) {
+      ses.partidas += 1; ses.jugado += datos.duracion; ses.puntosMax = Math.max(ses.puntosMax, datos.puntos);
+      enviar('partida', datos);
+    },
+  };
+})();
 
 // ---------- Sonido (Web Audio, sin archivos) ----------
 let sonidoOn = ls.get(LS.sonido) !== 'off';
@@ -119,7 +176,7 @@ const nivelDe = (n) => Math.floor(n / CFG.PREGUNTAS_POR_NIVEL) + 1;
 function iniciar() {
   sonido.activar();
   if (juego) { cancelAnimationFrame(juego.raf); clearTimeout(juego.timer); }
-  juego = { puntos: 0, n: 0, actual: null, total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
+  juego = { inicio: Date.now(), puntos: 0, n: 0, actual: null, total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
   $('puntos').textContent = '0';
   $('aciertos').textContent = '0';
   $('nivel').textContent = '1';
@@ -246,6 +303,7 @@ document.addEventListener('visibilitychange', () => {
 // ---------- Fin de partida ----------
 function mostrarFin(motivo) {
   const { a, b, correcto } = juego.actual;
+  stats.partida({ puntos: juego.puntos, aciertos: juego.n, nivel: nivelDe(juego.n), motivo, duracion: Date.now() - juego.inicio, tablas: tablas.join(',') });
   $('finTitulo').textContent = motivo === 'tiempo' ? '⏰ ¡Se acabó el tiempo!' : '❌ ¡Casi!';
   $('finDetalle').textContent = `${a} × ${b} = ${correcto}`;
   $('finPuntos').textContent = juego.puntos;

@@ -36,3 +36,11 @@ icon.svg
 - Ranking local con los 10 mejores puntajes (`localStorage`).
 
 Los números se ajustan en `CFG`, al principio de `app.js`.
+
+## Estadísticas anónimas
+
+El juego manda eventos a un Worker de Cloudflare (`stats/`) con base D1: `visita` (apertura de la app), `partida` (puntos, aciertos, nivel, motivo, duración, tablas) y `sesion` (tiempo en pantalla, tiempo jugando, partidas). Identifica al dispositivo con un id aleatorio guardado en `localStorage`; no hay cookies ni datos personales. No se mide cuando se juega desde `localhost` o una IP de red local. Para apagarlo, dejar `STATS_URL` vacío en `app.js`.
+
+- Panel: `https://aprendejugando-stats.cavassinif.workers.dev/dash?k=<clave>&dias=30` (la clave está en `stats/.dev.vars`, fuera de git).
+- JSON: mismo host, `/stats?k=<clave>&dias=30`. `dias=0` es todo el histórico.
+- Deploy del Worker: `cd stats && npx wrangler deploy`. Esquema: `stats/schema.sql`.
