@@ -1,7 +1,7 @@
 /* Service worker: red primero, caché de respaldo para jugar sin conexión.
  * GitHub Pages manda max-age=600, así que los pedidos saltean el caché HTTP del navegador:
  * la instalación baja los archivos frescos ('reload') y cada pedido revalida con el servidor ('no-cache'). */
-const VERSION = 'aj-v1.7'; // subir junto con APP_VERSION en app.js
+const VERSION = 'aj-v1.8'; // subir junto con APP_VERSION en app.js
 const ARCHIVOS = ['./', './index.html', './style.css', './app.js', './icon.svg', './manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
@@ -22,7 +22,10 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   const mismoOrigen = new URL(e.request.url).origin === location.origin;
-  const pedido = mismoOrigen ? new Request(e.request, { cache: 'no-cache' }) : e.request;
+  // Se construye desde la URL y no desde e.request: Safari no permite clonar un Request de navegación
+  // con otras opciones, y si esto tirara error el navegador volvería al caché HTTP de 10 minutos.
+  let pedido = e.request;
+  if (mismoOrigen) { try { pedido = new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }); } catch { /* usa el original */ } }
   e.respondWith(
     fetch(pedido)
       .then((res) => {
