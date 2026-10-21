@@ -72,9 +72,33 @@
     <h2>🏆 Ranking</h2>
     <ol id="lista"></ol>
     <p id="vacio" class="sub oculto">Todavía no hay puntajes. ¡Jugá para ser el primero!</p>
+    <p id="pista" class="pista oculto">Tocá un puntaje para verlo en grande y compartirlo</p>
     <button type="button" id="rankingJugar" class="grande primario">¡Jugar!</button>
     <button type="button" id="rankingMenu" class="secundario">Menú</button>
     <button type="button" id="borrar" class="peligro chico">Borrar ranking</button>
+  </section>
+
+  <!-- Detalle de un puntaje (para captura o compartir) -->
+  <section id="detalle" class="pantalla">
+    <div class="tarjetaPuntaje" id="tarjetaPuntaje">
+      <div class="tpPos" id="tpPos">🥇</div>
+      <div class="tpNombre" id="tpNombre">Nombre</div>
+      <div class="tpPuntos" id="tpPuntos">0</div>
+      <div class="tpLabel">puntos</div>
+      <div class="tpStats">
+        <div><b id="tpAciertos">0</b><span>aciertos</span></div>
+        <div><b id="tpNivel">1</b><span>nivel</span></div>
+        <div><b id="tpTablas">2-9</b><span>tablas</span></div>
+      </div>
+      <div class="tpFecha" id="tpFecha"></div>
+      <div class="tpPie">⚡ ¿Quién es más rápido multiplicando?<br><span>specie.github.io/aprendejugando</span></div>
+    </div>
+    <button type="button" id="compartir" class="grande primario">📤 Compartir</button>
+    <p id="compartirMsg" class="pista oculto"></p>
+    <div class="fila">
+      <button type="button" id="detalleJugar" class="secundario">¡Jugar!</button>
+      <button type="button" id="detalleVolver" class="secundario">Ranking</button>
+    </div>
   </section>
 
 </main>

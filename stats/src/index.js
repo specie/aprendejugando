@@ -3,7 +3,7 @@
  *  GET  /stats?k=&dias= devuelve los agregados en JSON
  *  GET  /dash?k=&dias=  panel HTML con los mismos números
  */
-const TIPOS = new Set(['visita', 'partida', 'sesion']);
+const TIPOS = new Set(['visita', 'partida', 'sesion', 'compartir']);
 const ID_OK = /^[a-z0-9-]{8,40}$/;
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -76,7 +76,7 @@ async function calcular(env, d) {
   const dia = `date(ts/1000 + ${off}, 'unixepoch')`;
   const q = (sql) => env.DB.prepare(sql).bind(desde);
 
-  const [visitas, partidas, volvieron, sesiones, porDia, rangos, top, tablas] = await Promise.all([
+  const [visitas, partidas, volvieron, sesiones, porDia, rangos, top, tablas, compartidos] = await Promise.all([
     q(`SELECT COUNT(DISTINCT sid) visitas, COUNT(DISTINCT cid) dispositivos,
               COUNT(DISTINCT CASE WHEN json_extract(datos,'$.primera')=1 THEN cid END) nuevos,
               COUNT(DISTINCT CASE WHEN json_extract(datos,'$.standalone')=1 THEN cid END) instalados
@@ -111,6 +111,9 @@ async function calcular(env, d) {
        FROM events WHERE tipo='partida' AND ts>=? ORDER BY puntos DESC LIMIT 10`).all(),
     q(`SELECT json_extract(datos,'$.tablas') tablas, COUNT(*) n
        FROM events WHERE tipo='partida' AND ts>=? GROUP BY tablas ORDER BY n DESC LIMIT 8`).all(),
+    q(`SELECT COUNT(*) total, COUNT(DISTINCT cid) dispositivos,
+              SUM(CASE WHEN json_extract(datos,'$.metodo')='imagen' THEN 1 ELSE 0 END) imagen
+       FROM events WHERE tipo='compartir' AND ts>=?`).first(),
   ]);
 
   const v = visitas.visitas || 0;
@@ -145,6 +148,7 @@ async function calcular(env, d) {
       porError: (partidas.partidas || 0) - (partidas.porTiempo || 0),
       duracionProm: Math.round(partidas.duracionProm || 0),
     },
+    compartidos: { total: compartidos.total || 0, dispositivos: compartidos.dispositivos || 0, imagen: compartidos.imagen || 0 },
     porDia: porDia.results,
     rangosPuntaje: rangos.results.map(({ rango, n }) => ({ rango, n })),
     topPuntajes: top.results,
@@ -217,6 +221,7 @@ function renderDash(s, d, k) {
   ${tarjeta(P.aciertosProm, 'aciertos promedio', 'máximo ' + P.aciertosMax + ' · nivel máx. ' + P.nivelMax)}
   ${tarjeta(mmss(P.duracionProm), 'duración promedio')}
   ${tarjeta(P.total ? pct(P.porTiempo / P.total) : '0 %', 'perdidas por tiempo', 'el resto, por error')}
+  ${tarjeta(s.compartidos.total, 'puntajes compartidos', s.compartidos.total ? s.compartidos.imagen + ' con imagen · ' + s.compartidos.dispositivos + ' dispositivos' : '')}
 </div>
 
 <h2>Distribución de puntajes</h2>

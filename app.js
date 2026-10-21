@@ -83,6 +83,7 @@ const stats = (() => {
       ses.partidas += 1; ses.jugado += datos.duracion; ses.puntosMax = Math.max(ses.puntosMax, datos.puntos);
       enviar('partida', datos);
     },
+    compartir(datos) { enviar('compartir', datos); },
   };
 })();
 
@@ -329,7 +330,7 @@ function entraEnRanking(puntos) {
 }
 function guardarEnRanking(nombre) {
   const r = cargarRanking();
-  const entrada = { id: Date.now(), nombre, puntos: juego.puntos, aciertos: juego.n, nivel: nivelDe(juego.n), fecha: new Date().toISOString() };
+  const entrada = { id: Date.now(), nombre, puntos: juego.puntos, aciertos: juego.n, nivel: nivelDe(juego.n), tablas: tablas.slice(), fecha: new Date().toISOString() };
   r.push(entrada);
   r.sort((x, y) => y.puntos - x.puntos || x.fecha.localeCompare(y.fecha));
   r.length = Math.min(r.length, CFG.RANKING_MAX);
@@ -344,18 +345,135 @@ function renderRanking(destacadoId) {
   $('vacio').classList.toggle('oculto', r.length > 0);
   lista.classList.toggle('oculto', r.length === 0);
   $('borrar').classList.toggle('oculto', r.length === 0);
-  const medallas = ['🥇', '🥈', '🥉'];
+  $('pista').classList.toggle('oculto', r.length === 0);
   r.forEach((e, i) => {
     const li = document.createElement('li');
     if (e.id === destacadoId) li.className = 'nuevo';
     const fecha = new Date(e.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' });
-    li.innerHTML = `<span class="pos">${medallas[i] || (i + 1) + '.'}</span>
+    li.innerHTML = `<span class="pos">${MEDALLAS[i] || (i + 1) + '.'}</span>
       <span class="nom"></span>
       <span class="det">${e.aciertos} aciertos · nivel ${e.nivel}<br>${fecha}</span>
-      <span class="pts">${e.puntos}</span>`;
+      <span class="pts">${e.puntos}</span>
+      <span class="flecha">›</span>`;
     li.querySelector('.nom').textContent = e.nombre;
+    li.addEventListener('click', () => mostrarDetalle(e, i));
     lista.appendChild(li);
   });
+}
+const MEDALLAS = ['🥇', '🥈', '🥉'];
+const URL_JUEGO = 'https://specie.github.io/aprendejugando/';
+
+// ---------- Detalle de un puntaje (para sacar captura o compartir) ----------
+let detalle = null;
+const fmtTablas = (t) => {
+  if (!Array.isArray(t) || !t.length) return '2-9';
+  const seguidas = t.every((v, i) => i === 0 || v === t[i - 1] + 1);
+  return seguidas && t.length > 2 ? `${t[0]}-${t[t.length - 1]}` : t.join(', ');
+};
+const fmtFechaLarga = (iso) => new Date(iso).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+function mostrarDetalle(e, pos) {
+  detalle = { ...e, pos };
+  const tp = $('tpPos');
+  tp.textContent = MEDALLAS[pos] || String(pos + 1);
+  tp.classList.toggle('num', !MEDALLAS[pos]);
+  $('tpNombre').textContent = e.nombre;
+  $('tpPuntos').textContent = e.puntos;
+  $('tpAciertos').textContent = e.aciertos;
+  $('tpNivel').textContent = e.nivel;
+  $('tpTablas').textContent = fmtTablas(e.tablas);
+  $('tpFecha').textContent = fmtFechaLarga(e.fecha);
+  $('compartirMsg').classList.add('oculto');
+  $('compartir').disabled = false;
+  mostrar('detalle');
+}
+
+function textoCompartir(e) {
+  const puesto = MEDALLAS[e.pos] ? `${MEDALLAS[e.pos]} ` : `#${e.pos + 1} `;
+  return `${puesto}${e.nombre} hizo ${e.puntos} puntos multiplicando (${e.aciertos} aciertos, nivel ${e.nivel}). ¿Le ganás? ${URL_JUEGO}`;
+}
+
+// Dibuja la tarjeta como imagen (1080×1350, formato de historia/WhatsApp) para compartirla como foto.
+function imagenCompartir(e) {
+  const W = 1080, H = 1350;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const grad = x.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#6366f1'); grad.addColorStop(1, '#ec4899');
+  x.fillStyle = grad; x.fillRect(0, 0, W, H);
+  const font = (peso, px) => `${peso} ${px}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`;
+  const centro = (t, y, f, color) => { x.font = f; x.fillStyle = color; x.textAlign = 'center'; x.fillText(t, W / 2, y); };
+  const redondo = (px, py, w, h, r, color) => {
+    x.fillStyle = color; x.beginPath();
+    x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r);
+    x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); x.fill();
+  };
+  // Título
+  centro('⚡ ¿Quién es más rápido', 120, font(800, 52), '#fff');
+  centro('multiplicando?', 185, font(800, 52), '#fff');
+  // Tarjeta
+  x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowBlur = 40; x.shadowOffsetY = 20;
+  redondo(90, 260, W - 180, 880, 48, '#fff');
+  x.shadowColor = 'transparent';
+  // Puesto
+  if (MEDALLAS[e.pos]) centro(MEDALLAS[e.pos], 430, font(400, 150), '#000');
+  else {
+    x.fillStyle = '#eef2ff'; x.beginPath(); x.arc(W / 2, 390, 70, 0, Math.PI * 2); x.fill();
+    centro(String(e.pos + 1), 418, font(900, 80), '#6366f1');
+  }
+  centro(e.nombre, 560, font(800, 72), '#1e1b4b');
+  centro(String(e.puntos), 740, font(900, 190), '#6366f1');
+  centro('PUNTOS', 800, font(700, 36), '#6b7280');
+  // Stats
+  const cajas = [[String(e.aciertos), 'aciertos'], [String(e.nivel), 'nivel'], [fmtTablas(e.tablas), 'tablas']];
+  const cw = 270, gap = 20, x0 = (W - (cw * 3 + gap * 2)) / 2;
+  cajas.forEach(([v, l], i) => {
+    const px = x0 + i * (cw + gap);
+    redondo(px, 860, cw, 150, 28, '#f3f4ff');
+    x.font = font(900, 56); x.fillStyle = '#1e1b4b'; x.textAlign = 'center'; x.fillText(v, px + cw / 2, 935);
+    x.font = font(700, 28); x.fillStyle = '#6b7280'; x.fillText(l, px + cw / 2, 985);
+  });
+  centro(fmtFechaLarga(e.fecha), 1080, font(400, 32), '#6b7280');
+  // Pie
+  centro('¿Le ganás? Jugá gratis en', 1230, font(700, 36), '#fff');
+  centro('specie.github.io/aprendejugando', 1285, font(400, 36), '#fff');
+  return new Promise((res) => c.toBlob(res, 'image/png'));
+}
+
+async function compartir() {
+  if (!detalle) return;
+  const btn = $('compartir'), msg = $('compartirMsg');
+  btn.disabled = true;
+  const avisar = (t) => { msg.textContent = t; msg.classList.remove('oculto'); };
+  const texto = textoCompartir(detalle);
+  let metodo = 'ninguno';
+  try {
+    if (navigator.share) {
+      let archivo = null;
+      try {
+        const blob = await imagenCompartir(detalle);
+        if (blob) {
+          const f = new File([blob], `puntaje-${detalle.nombre.replace(/\W+/g, '_')}-${detalle.puntos}.png`, { type: 'image/png' });
+          if (!navigator.canShare || navigator.canShare({ files: [f] })) archivo = f;
+        }
+      } catch { /* sin imagen: se comparte el texto */ }
+      if (archivo) { metodo = 'imagen'; await navigator.share({ files: [archivo], title: 'Mi puntaje', text: texto }); }
+      else { metodo = 'texto'; await navigator.share({ title: 'Mi puntaje', text: texto }); }
+      avisar('¡Listo!');
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      metodo = 'portapapeles';
+      await navigator.clipboard.writeText(texto);
+      avisar('Texto copiado. Pegalo donde quieras, o sacá una captura de pantalla.');
+    } else {
+      avisar('Sacá una captura de pantalla para compartir este puntaje.');
+    }
+  } catch (err) {
+    if (err && err.name === 'AbortError') { metodo = 'cancelado'; }
+    else avisar('No se pudo compartir. Sacá una captura de pantalla.');
+  }
+  stats.compartir({ metodo, puntos: detalle.puntos, pos: detalle.pos + 1 });
+  btn.disabled = false;
 }
 let borrarArmado = 0;
 function borrarRanking() {
@@ -380,6 +498,9 @@ $('finRanking').addEventListener('click', () => { renderRanking(); mostrar('rank
 $('finMenu').addEventListener('click', () => mostrar('menu'));
 $('rankingMenu').addEventListener('click', () => mostrar('menu'));
 $('borrar').addEventListener('click', borrarRanking);
+$('compartir').addEventListener('click', compartir);
+$('detalleJugar').addEventListener('click', iniciar);
+$('detalleVolver').addEventListener('click', () => { renderRanking(); mostrar('ranking'); });
 $('sonido').addEventListener('click', () => {
   sonidoOn = !sonidoOn;
   ls.set(LS.sonido, sonidoOn ? 'on' : 'off');

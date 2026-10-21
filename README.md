@@ -18,7 +18,7 @@ Para dejarlo instalado como app en la tablet: publicarlo en cualquier hosting es
 ## Archivos
 
 ```
-index.html              pantallas: menú, juego, fin, ranking
+index.html              pantallas: menú, juego, fin, ranking, detalle de un puntaje
 style.css
 app.js                  lógica del juego
 manifest.webmanifest    datos de la app (ícono, nombre)
@@ -34,12 +34,13 @@ icon.svg
 - Cada 5 aciertos sube un nivel.
 - Se pierde al responder mal o al quedarse sin tiempo.
 - Ranking local con los 10 mejores puntajes (`localStorage`).
+- Tocar un puntaje del ranking abre una tarjeta en grande para sacarle captura o compartirla. El botón «Compartir» genera una imagen PNG (1080×1350) y usa el menú de compartir del dispositivo; si no está disponible, copia el texto al portapapeles.
 
 Los números se ajustan en `CFG`, al principio de `app.js`.
 
 ## Estadísticas anónimas
 
-El juego manda eventos a un Worker de Cloudflare (`stats/`) con base D1: `visita` (apertura de la app), `partida` (puntos, aciertos, nivel, motivo, duración, tablas) y `sesion` (tiempo en pantalla, tiempo jugando, partidas). Identifica al dispositivo con un id aleatorio guardado en `localStorage`; no hay cookies ni datos personales. No se mide cuando se juega desde `localhost` o una IP de red local. Para apagarlo, dejar `STATS_URL` vacío en `app.js`.
+El juego manda eventos a un Worker de Cloudflare (`stats/`) con base D1: `visita` (apertura de la app), `partida` (puntos, aciertos, nivel, motivo, duración, tablas) , `sesion` (tiempo en pantalla, tiempo jugando, partidas) y `compartir` (método: imagen, texto, portapapeles o cancelado). Identifica al dispositivo con un id aleatorio guardado en `localStorage`; no hay cookies ni datos personales. No se mide cuando se juega desde `localhost` o una IP de red local. Para apagarlo, dejar `STATS_URL` vacío en `app.js`.
 
 - Panel: `https://aprendejugando-stats.cavassinif.workers.dev/dash?k=<clave>&dias=30` (la clave está en `stats/.dev.vars`, fuera de git).
 - JSON: mismo host, `/stats?k=<clave>&dias=30`. `dias=0` es todo el histórico.

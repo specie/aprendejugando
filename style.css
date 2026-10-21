@@ -103,10 +103,31 @@ button:disabled { opacity: .5; cursor: default; }
 
 /* Ranking */
 #lista { list-style: none; padding: 0; margin: 0; width: 100%; background: var(--card); border-radius: var(--radio); overflow: hidden; }
-#lista li { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 1.1rem; }
+#lista li { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 1.1rem; cursor: pointer; }
+#lista li:active { background: #eef2ff; }
 #lista li:last-child { border-bottom: 0; }
 #lista li.nuevo { background: #fef3c7; }
 #lista .pos { width: 2.2em; font-weight: 800; text-align: left; }
 #lista .nom { flex: 1; text-align: left; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #lista .det { color: var(--suave); font-size: .85rem; text-align: right; }
 #lista .pts { font-weight: 900; font-size: 1.2rem; min-width: 3em; text-align: right; }
+#lista .flecha { color: #c7c9d9; font-size: 1.2rem; }
+.pista { color: #fff; opacity: .85; margin: 0; font-size: 1rem; }
+
+/* Detalle de un puntaje */
+.tarjetaPuntaje {
+  background: var(--card); border-radius: 28px; padding: 28px 20px 20px; width: 100%;
+  box-shadow: 0 12px 30px rgba(0,0,0,.25); display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.tpPos { font-size: 4rem; line-height: 1; }
+.tpPos.num { font-size: 2.4rem; font-weight: 900; color: var(--bg1); background: #eef2ff; border-radius: 999px; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; }
+.tpNombre { font-size: clamp(1.6rem, 8vw, 2.4rem); font-weight: 800; margin-top: 8px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tpPuntos { font-size: clamp(4rem, 22vw, 6.5rem); font-weight: 900; line-height: 1; margin-top: 8px; color: var(--bg1); font-variant-numeric: tabular-nums; }
+.tpLabel { color: var(--suave); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: .1em; }
+.tpStats { display: flex; gap: 8px; width: 100%; margin-top: 18px; }
+.tpStats > div { flex: 1; background: #f3f4ff; border-radius: 16px; padding: 10px 4px; display: flex; flex-direction: column; }
+.tpStats b { font-size: 1.5rem; font-weight: 900; }
+.tpStats span { color: var(--suave); font-size: .8rem; font-weight: 700; }
+.tpFecha { color: var(--suave); font-size: .95rem; margin-top: 14px; }
+.tpPie { color: var(--suave); font-size: .85rem; font-weight: 700; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e5e7eb; width: 100%; line-height: 1.5; }
+.tpPie span { font-weight: 400; }
