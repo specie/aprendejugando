@@ -4,12 +4,15 @@
 const CFG = {
   TIEMPO_INICIAL: 10000,   // ms para responder la primera pregunta
   TIEMPO_MINIMO: 1200,     // nunca baja de acá (límite físico para leer y tocar)
-  // El tiempo de la próxima pregunta se achica según cuánto sobró en la anterior:
-  // si respondió justo, baja apenas AJUSTE_MINIMO; si le sobró mucho, baja además una fracción de lo que sobró.
-  AJUSTE_MINIMO: 100,      // ms que se restan siempre, aunque haya respondido justo
-  AJUSTE_SOBRANTE: 0.25,   // fracción del tiempo que sobró que se resta además
+  // El tiempo límite se ajusta al subir de nivel (cada PREGUNTAS_POR_NIVEL aciertos) según el promedio
+  // de respuesta de ese nivel: apunta a MARGEN veces el promedio, pero baja como mucho PASO_MAX y
+  // como mínimo PASO_MIN del límite actual. Nunca sube.
+  MARGEN: 1.6,             // límite objetivo = promedio de respuesta × MARGEN
+  PASO_MAX: 0.15,          // por nivel baja a lo sumo este porcentaje del límite actual
+  PASO_MIN: 0.03,          // por nivel baja al menos este porcentaje, aunque vaya justo
   PUNTOS_BASE: 100,        // por responder bien
-  BONUS_MAX: 100,          // extra máximo por velocidad (proporcional al tiempo que sobró)
+  BONUS_MAX: 100,          // extra máximo por velocidad (proporcional al tiempo que sobró) a 10 s de límite;
+                           // se multiplica por la dificultad (TIEMPO_INICIAL / límite actual)
   PREGUNTAS_POR_NIVEL: 5,
   RANKING_MAX: 10,
 };
@@ -180,7 +183,7 @@ const nivelDe = (n) => Math.floor(n / CFG.PREGUNTAS_POR_NIVEL) + 1;
 function iniciar() {
   sonido.activar();
   if (juego) { cancelAnimationFrame(juego.raf); clearTimeout(juego.timer); }
-  juego = { inicio: Date.now(), puntos: 0, n: 0, actual: null, limite: CFG.TIEMPO_INICIAL, total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
+  juego = { inicio: Date.now(), puntos: 0, n: 0, actual: null, limite: CFG.TIEMPO_INICIAL, tiempos: [], total: 0, deadline: 0, raf: 0, timer: 0, bloqueado: false, ultimaClave: null, ultimoTic: null };
   $('puntos').textContent = '0';
   $('aciertos').textContent = '0';
   $('nivel').textContent = '1';
@@ -242,14 +245,15 @@ function responder(idx) {
     return;
   }
   const restante = Math.max(0, juego.deadline - performance.now());
-  // La próxima pregunta da menos tiempo: siempre un poco, y bastante más si esta la respondió sobrado.
-  juego.limite = Math.max(CFG.TIEMPO_MINIMO, juego.total - CFG.AJUSTE_MINIMO - restante * CFG.AJUSTE_SOBRANTE);
-  const bonus = Math.round(CFG.BONUS_MAX * restante / juego.total);
+  juego.tiempos.push(juego.total - restante);
+  const dificultad = CFG.TIEMPO_INICIAL / juego.total;
+  const bonus = Math.round(CFG.BONUS_MAX * (restante / juego.total) * dificultad);
   const ganados = CFG.PUNTOS_BASE + bonus;
   const nivelAntes = nivelDe(juego.n);
   juego.puntos += ganados;
   juego.n += 1;
   const nivelAhora = nivelDe(juego.n);
+  if (nivelAhora > nivelAntes) ajustarLimite();
   botones[idx].classList.add('ok');
   $('puntos').textContent = juego.puntos;
   $('aciertos').textContent = juego.n;
@@ -263,6 +267,16 @@ function responder(idx) {
     sonido.ok();
   }
   juego.timer = setTimeout(nuevaPregunta, 400);
+}
+
+// Al subir de nivel: el límite apunta a MARGEN × promedio de respuesta del nivel, con paso acotado y sin subir nunca.
+function ajustarLimite() {
+  const ultimos = juego.tiempos.slice(-CFG.PREGUNTAS_POR_NIVEL);
+  const promedio = ultimos.reduce((a, b) => a + b, 0) / ultimos.length;
+  const objetivo = promedio * CFG.MARGEN;
+  const maximo = juego.limite * (1 - CFG.PASO_MIN);   // nunca sube, y siempre baja al menos PASO_MIN
+  const minimo = juego.limite * (1 - CFG.PASO_MAX);   // y nunca baja más de PASO_MAX por nivel
+  juego.limite = Math.max(CFG.TIEMPO_MINIMO, Math.min(maximo, Math.max(minimo, objetivo)));
 }
 
 function perder(motivo) {

@@ -29,8 +29,8 @@ icon.svg
 ## Reglas
 
 - Se elige qué tablas practicar (2 a 9, se recuerda la elección).
-- Cada pregunta tiene 4 opciones y un tiempo límite que empieza en 10 s. Después de cada acierto, el tiempo de la próxima pregunta baja según cuánto sobró: siempre 0,1 s, más un 25 % del tiempo que sobró. Si respondés justo, baja apenas; si respondés sobrado, baja mucho. Mínimo 1,2 s.
-- Puntos por acierto: 100 fijos + hasta 100 de bonus según cuánto tiempo sobró.
+- Cada pregunta tiene 4 opciones y un tiempo límite que empieza en 10 s. Al subir de nivel (cada 5 aciertos) el límite se ajusta al promedio de respuesta de ese nivel: apunta a 1,6 veces el promedio, pero por nivel baja como mucho 15 % y como mínimo 3 % del límite actual. Nunca sube. Mínimo 1,2 s.
+- Puntos por acierto: 100 fijos + bonus según cuánto tiempo sobró, multiplicado por la dificultad (10 s dividido el límite actual): a 2,5 s por pregunta cada acierto vale hasta 4 veces más.
 - Cada 5 aciertos sube un nivel.
 - Se pierde al responder mal o al quedarse sin tiempo.
 - Ranking local con los 10 mejores puntajes (`localStorage`).
