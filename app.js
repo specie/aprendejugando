@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '1.9'; // subir junto con VERSION en sw.js en cada publicación
+const APP_VERSION = '1.10'; // subir junto con VERSION en sw.js en cada publicación
 
 // ---------- Configuración ----------
 const CFG = {
@@ -426,7 +426,7 @@ function renderRanking(destacadoId) {
 }
 const MEDALLAS = ['🥇', '🥈', '🥉'];
 const ICONO_COMPARTIR = '<svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7l6.8-4M8.6 13.3l6.8 4"/></svg>';
-const URL_JUEGO = 'https://specie.github.io/aprendejugando/';
+const URL_JUEGO = 'https://groovymind.app/';
 
 // ---------- Detalle de un puntaje (para sacar captura o compartir) ----------
 let detalle = null;
@@ -502,7 +502,7 @@ function imagenCompartir(e) {
   centro(fmtFechaLarga(e.fecha), 1080, font(400, 32), '#6b7280');
   // Pie
   centro('¿Le ganás? Jugá gratis en', 1230, font(700, 36), '#fff');
-  centro('specie.github.io/aprendejugando', 1285, font(400, 36), '#fff');
+  centro('groovymind.app', 1285, font(400, 36), '#fff');
   return new Promise((res) => c.toBlob(res, 'image/png'));
 }
 

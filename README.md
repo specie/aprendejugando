@@ -1,6 +1,6 @@
 # Groovy Mind
 
-Juegos web para entrenar la mente, con el gato de la familia Groovy (dibujo de la hija de Fabio). Pensados para tablet o celular: botones grandes, sin login, ranking guardado en el dispositivo. La página de inicio lista los juegos; por ahora hay uno: **¿Quién es más rápido multiplicando?** (tablas de multiplicar contra reloj). El repo y la URL conservan el nombre viejo, `aprendejugando`.
+Juegos web para entrenar la mente, con el gato de la familia Groovy (dibujo de la hija de Fabio). Pensados para tablet o celular: botones grandes, sin login, ranking guardado en el dispositivo. La página de inicio lista los juegos; por ahora hay uno: **¿Quién es más rápido multiplicando?** (tablas de multiplicar contra reloj). Publicado en **https://groovymind.app** (GitHub Pages con dominio propio; `specie.github.io/aprendejugando` redirige ahí). El repo conserva el nombre viejo, `aprendejugando`.
 
 ## Cómo correrlo
 
@@ -13,7 +13,11 @@ python3 -m http.server 8080
 
 y abrir <http://localhost:8080>. Desde la tablet, en la misma red wifi, abrir `http://<ip-de-la-compu>:8080` (si la compu tiene firewall, abrir el puerto: `sudo ufw allow 8080/tcp`).
 
-Para dejarlo instalado como app en la tablet: publicarlo en cualquier hosting estático (GitHub Pages, Cloudflare Pages, Netlify), abrir la URL en Safari/Chrome y elegir «Agregar a pantalla de inicio». Funciona sin conexión después de la primera carga.
+Para dejarlo instalado como app en la tablet: abrir https://groovymind.app en Safari/Chrome y elegir «Agregar a pantalla de inicio». Funciona sin conexión después de la primera carga.
+
+## Dominio
+
+`groovymind.app` está en Cloudflare (zona de la cuenta de walrusmachine.com). DNS sin proxy: A/AAAA del apex a las IP de GitHub Pages y `www` CNAME a `specie.github.io`. El dominio se declara en el archivo `CNAME` del repo y en la configuración de Pages (`gh api repos/specie/aprendejugando/pages`). El certificado lo emite GitHub; `https_enforced` se activa cuando está listo.
 
 ## Archivos
 
