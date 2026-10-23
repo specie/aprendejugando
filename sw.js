@@ -1,8 +1,8 @@
 /* Service worker: red primero, caché de respaldo para jugar sin conexión.
  * GitHub Pages manda max-age=600, así que los pedidos saltean el caché HTTP del navegador:
  * la instalación baja los archivos frescos ('reload') y cada pedido revalida con el servidor ('no-cache'). */
-const VERSION = 'aj-v1.8'; // subir junto con APP_VERSION en app.js
-const ARCHIVOS = ['./', './index.html', './style.css', './app.js', './icon.svg', './manifest.webmanifest'];
+const VERSION = 'aj-v1.9'; // subir junto con APP_VERSION en app.js
+const ARCHIVOS = ['./', './index.html', './style.css', './app.js', './icon.svg', './logo.svg', './manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(

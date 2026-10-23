@@ -139,3 +139,11 @@ button:disabled { opacity: .5; cursor: default; }
 .tpFecha { color: var(--suave); font-size: .95rem; margin-top: 14px; }
 .tpPie { color: var(--suave); font-size: .85rem; font-weight: 700; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e5e7eb; width: 100%; line-height: 1.5; }
 .tpPie span { font-weight: 400; }
+
+/* Inicio */
+.logo { width: 128px; height: 128px; border-radius: 28px; box-shadow: 0 8px 20px rgba(0,0,0,.25); }
+.juegoBtn { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; padding: 16px 18px; }
+.juegoBtn .emoji { font-size: 2.4rem; }
+.juegoBtn .txt { display: flex; flex-direction: column; gap: 4px; }
+.juegoBtn b { font-size: 1.15rem; line-height: 1.2; }
+.juegoBtn small { color: var(--suave); font-weight: 500; font-size: .9rem; }

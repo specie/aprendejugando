@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#e9e6ff"/>
+  <g transform="translate(256 262) scale(0.8) translate(-256 -262)">
+  <!-- Groovy Mind: cabeza del gato de la familia Groovy (dibujo de la hija de Fabio), medalla con G. Fondo lavanda para distinguirlo de Groovy Chord -->
+    <g stroke="#3a2416" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    <!-- cuerpo (asoma abajo) -->
+    <path d="M150 512 C158 455, 190 420, 256 418 C322 420, 354 455, 362 512 Z" fill="#f2a51f"/>
+    <path d="M208 512 C214 482, 232 468, 256 468 C280 468, 298 482, 304 512" fill="#fbecc8" stroke="none"/>
+    <path d="M160 512 C162 486, 172 470, 186 466 C204 470, 210 492, 206 512 Z" fill="#e2412b" stroke="none"/>
+    <!-- orejas -->
+    <path d="M128 236 L146 74 Q150 56 166 66 L252 156 Z" fill="#f2a51f"/>
+    <path d="M384 236 L366 74 Q362 56 346 66 L260 156 Z" fill="#f2a51f"/>
+    <path d="M156 170 L162 100 L214 150 Z" fill="#e2412b" stroke="none"/>
+    <path d="M356 170 L350 100 L298 150 Z" fill="#e2412b" stroke="none"/>
+    <!-- collar -->
+    <path d="M168 392 Q256 426 344 392 L348 420 Q256 456 164 420 Z" fill="#2f8f3c"/>
+    <!-- cabeza -->
+    <path d="M118 296 C110 214, 146 158, 206 150 L306 150 C366 158, 402 214, 394 296 C386 366, 330 402, 256 402 C182 402, 126 366, 118 296 Z" fill="#f2a51f"/>
+    <!-- mechón -->
+    <path d="M238 152 C236 132, 250 126, 252 140 M252 150 C254 128, 272 128, 268 146" fill="none" stroke-width="7"/>
+    <!-- ojos -->
+    <circle cx="194" cy="262" r="48" fill="#ee8a1d"/>
+    <circle cx="318" cy="262" r="48" fill="#ee8a1d"/>
+    <ellipse cx="194" cy="262" rx="8" ry="30" fill="#3a2416" stroke="none"/>
+    <ellipse cx="318" cy="262" rx="8" ry="30" fill="#3a2416" stroke="none"/>
+    <!-- nariz y boca -->
+    <path d="M242 316 L270 316 L256 333 Z" fill="#ea5a47" stroke-width="7"/>
+    <path d="M256 334 L256 344 M226 340 Q240 364 256 344 Q272 364 286 340" fill="none" stroke-width="7"/>
+    <!-- bigotes -->
+    <path d="M150 316 L64 306 M152 334 L72 350 M362 316 L448 306 M360 334 L440 350" fill="none" stroke-width="5"/>
+    <!-- medalla con G -->
+    <circle cx="256" cy="426" r="9" fill="none" stroke-width="6"/>
+    <circle cx="256" cy="466" r="34" fill="#f6c13a"/>
+  </g>
+  <text x="256" y="481" text-anchor="middle" font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif" font-weight="800" font-size="44" fill="#3a2416">G</text>
+</g>
+</svg>

@@ -1,6 +1,6 @@
 'use strict';
 
-const APP_VERSION = '1.8'; // subir junto con VERSION en sw.js en cada publicación
+const APP_VERSION = '1.9'; // subir junto con VERSION en sw.js en cada publicación
 
 // ---------- Configuración ----------
 const CFG = {
@@ -455,7 +455,7 @@ function mostrarDetalle(e, pos) {
 
 function textoCompartir(e) {
   const puesto = MEDALLAS[e.pos] ? `${MEDALLAS[e.pos]} ` : `#${e.pos + 1} `;
-  return `${puesto}${e.nombre} hizo ${e.puntos} puntos multiplicando (${e.aciertos} aciertos, nivel ${e.nivel}). ¿Le ganás? ${URL_JUEGO}`;
+  return `${puesto}${e.nombre} hizo ${e.puntos} puntos multiplicando en Groovy Mind (${e.aciertos} aciertos, nivel ${e.nivel}). ¿Le ganás? ${URL_JUEGO}`;
 }
 
 // Dibuja la tarjeta como imagen (1080×1350, formato de historia/WhatsApp) para compartirla como foto.
@@ -475,8 +475,8 @@ function imagenCompartir(e) {
     x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); x.fill();
   };
   // Título
-  centro('⚡ ¿Quién es más rápido', 120, font(800, 52), '#fff');
-  centro('multiplicando?', 185, font(800, 52), '#fff');
+  centro('🐱 Groovy Mind', 110, font(800, 56), '#fff');
+  centro('⚡ ¿Quién es más rápido multiplicando?', 180, font(700, 40), '#fff');
   // Tarjeta
   x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowBlur = 40; x.shadowOffsetY = 20;
   redondo(90, 260, W - 180, 880, 48, '#fff');
@@ -523,8 +523,8 @@ async function compartir() {
           if (!navigator.canShare || navigator.canShare({ files: [f] })) archivo = f;
         }
       } catch { /* sin imagen: se comparte el texto */ }
-      if (archivo) { metodo = 'imagen'; await navigator.share({ files: [archivo], title: 'Mi puntaje', text: texto }); }
-      else { metodo = 'texto'; await navigator.share({ title: 'Mi puntaje', text: texto }); }
+      if (archivo) { metodo = 'imagen'; await navigator.share({ files: [archivo], title: 'Mi puntaje en Groovy Mind', text: texto }); }
+      else { metodo = 'texto'; await navigator.share({ title: 'Mi puntaje en Groovy Mind', text: texto }); }
       avisar('¡Listo!');
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
       metodo = 'portapapeles';
@@ -564,6 +564,8 @@ $('verRanking').addEventListener('click', () => { renderRanking(); mostrar('rank
 $('finRanking').addEventListener('click', () => { renderRanking(); mostrar('ranking'); });
 $('finMenu').addEventListener('click', () => mostrar('menu'));
 $('rankingMenu').addEventListener('click', () => mostrar('menu'));
+$('irMultiplicar').addEventListener('click', () => mostrar('menu'));
+$('menuInicio').addEventListener('click', () => mostrar('inicio'));
 $('borrar').addEventListener('click', borrarRanking);
 $('compartir').addEventListener('click', compartir);
 $('detalleJugar').addEventListener('click', () => iniciar('reloj'));

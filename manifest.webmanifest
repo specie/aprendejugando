@@ -1,15 +1,19 @@
 {
-  "name": "Aprendé jugando",
-  "short_name": "Aprendé",
-  "description": "Juegos para aprender lo que se estudia en la escuela",
+  "name": "Groovy Mind",
+  "short_name": "Groovy Mind",
+  "description": "Juegos para entrenar la mente: multiplicaciones contra reloj y más",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#6366f1",
+  "background_color": "#e9e6ff",
   "theme_color": "#6366f1",
   "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

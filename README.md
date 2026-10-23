@@ -1,6 +1,6 @@
-# Aprendé jugando: Multiplicaciones
+# Groovy Mind
 
-Juego web para practicar las tablas de multiplicar. Pensado para tablet o celular: botones grandes, sin login, ranking guardado en el dispositivo.
+Juegos web para entrenar la mente, con el gato de la familia Groovy (dibujo de la hija de Fabio). Pensados para tablet o celular: botones grandes, sin login, ranking guardado en el dispositivo. La página de inicio lista los juegos; por ahora hay uno: **¿Quién es más rápido multiplicando?** (tablas de multiplicar contra reloj). El repo y la URL conservan el nombre viejo, `aprendejugando`.
 
 ## Cómo correrlo
 
@@ -18,13 +18,18 @@ Para dejarlo instalado como app en la tablet: publicarlo en cualquier hosting es
 ## Archivos
 
 ```
-index.html              pantallas: menú, juego, fin, ranking, detalle de un puntaje
+index.html              pantallas: inicio (elegir juego), menú de multiplicaciones, juego, fin, ranking, detalle de un puntaje
 style.css
 app.js                  lógica del juego
 manifest.webmanifest    datos de la app (ícono, nombre)
 sw.js                   caché para jugar sin conexión
-icon.svg
+icon.svg, logo.svg      gato Groovy (fondo lavanda; Groovy Chord usa el mismo gato con fondo beige)
+*.png                   íconos para iOS/Android, generados desde icon.svg e icon-maskable.svg (ver abajo)
 ```
+
+## Íconos PNG
+
+iOS ignora `apple-touch-icon` en SVG, así que hay PNG. Para regenerarlos después de tocar `icon.svg` o `icon-maskable.svg`: abrir `index.html` en Chrome y, en la consola, dibujar el SVG en un `canvas` y guardar `toDataURL('image/png')`; o `rsvg-convert -w 512 icon.svg > icono-512.png` si está instalado. Tamaños: 180 (apple-touch-icon.png), 192 y 512 (icono-*.png), 512 maskable (maskable-512.png).
 
 ## Reglas
 

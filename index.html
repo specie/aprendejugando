@@ -3,19 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>¿Quién es más rápido multiplicando?</title>
+<title>Groovy Mind</title>
 <meta name="theme-color" content="#6366f1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Groovy Mind">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main id="app">
 
-  <!-- Menú -->
-  <section id="menu" class="pantalla activa">
+  <!-- Inicio: elegir a qué jugar -->
+  <section id="inicio" class="pantalla activa">
+    <img src="logo.svg" alt="" class="logo">
+    <h1>Groovy Mind</h1>
+    <p class="sub">Juegos para entrenar la mente. ¿A qué jugamos?</p>
+    <button type="button" id="irMultiplicar" class="juegoBtn">
+      <span class="emoji">⚡</span>
+      <span class="txt"><b>¿Quién es más rápido multiplicando?</b><small>Tablas del 2 al 9, contra reloj o en modo práctica</small></span>
+    </button>
+    <p id="version" class="version"></p>
+  </section>
+
+  <!-- Menú de multiplicaciones -->
+  <section id="menu" class="pantalla">
     <h1>⚡ ¿Quién es más rápido multiplicando?</h1>
     <p class="sub">Respondé rápido… ¡pero bien! Sumá puntos y superá el récord.</p>
 
@@ -32,7 +45,7 @@
       <button type="button" id="verRanking" class="secundario">🏆 Ranking</button>
       <button type="button" id="sonido" class="secundario" aria-label="Sonido">🔊</button>
     </div>
-    <p id="version" class="version"></p>
+    <button type="button" id="menuInicio" class="peligro chico">← Otros juegos</button>
   </section>
 
   <!-- Juego -->
@@ -97,7 +110,7 @@
         <div><b id="tpTablas">2-9</b><span>tablas</span></div>
       </div>
       <div class="tpFecha" id="tpFecha"></div>
-      <div class="tpPie">⚡ ¿Quién es más rápido multiplicando?<br><span>specie.github.io/aprendejugando</span></div>
+      <div class="tpPie">🐱 Groovy Mind · ¿Quién es más rápido multiplicando?<br><span>specie.github.io/aprendejugando</span></div>
     </div>
     <button type="button" id="compartir" class="grande primario"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.7l6.8-4M8.6 13.3l6.8 4"/></svg> Compartir</button>
     <p id="compartirMsg" class="pista oculto"></p>
